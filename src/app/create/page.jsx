@@ -3,10 +3,16 @@
 import React from "react";
 import { useInvitation } from "@/context/InvitationContext";
 import InvitationForm from "@/components/invitation/InvitationForm";
-import ClassicTemplate from "@/components/templates/ClassicTemplate"; // 👈 Import our new production layout
+import { TEMPLATE_REGISTRY } from "@/components/templates/templates"; // 👈 Import Registry map
 
 export default function CreateInvitationPage() {
   const { invitationData } = useInvitation();
+
+  // Find the selected template component config dynamically, fallback to classic-ivory if none matched
+  const SelectedTemplateConfig =
+    TEMPLATE_REGISTRY[invitationData.templateId] ||
+    TEMPLATE_REGISTRY["classic-ivory"];
+  const ActiveTemplateComponent = SelectedTemplateConfig.component;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-stone-100">
@@ -28,10 +34,9 @@ export default function CreateInvitationPage() {
 
         {/* RIGHT COLUMN: Live Production Preview Canvas */}
         <div className="p-6 md:p-10 lg:sticky lg:top-16 h-[75vh] lg:h-[calc(100vh-4rem)] flex items-center justify-center bg-stone-100 overflow-hidden">
-          {/* Elegant Card Shadow Wrapper Container */}
           <div className="w-full max-w-sm aspect-[3.5/5] bg-white shadow-2xl rounded-sm overflow-hidden border border-stone-200/60 transition-all duration-300 transform hover:scale-[1.01]">
-            {/* RENDER THE PRODUCTION CLASSIC TEMPLATE COMPONENT */}
-            <ClassicTemplate data={invitationData} />
+            {/* RENDER THE ACTIVE COMPONENT AUTOMATICALLY DYNAMICALLY */}
+            <ActiveTemplateComponent data={invitationData} />
           </div>
         </div>
       </div>
