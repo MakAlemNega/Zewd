@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext } from "react";
+import { useLocalStorage } from "../app/hooks/useLocalStorage"; // 👈 Imported the custom local storage hook
 
 // 1. Create the Context
 const InvitationContext = createContext(undefined);
@@ -23,7 +24,12 @@ const initialInvitationData = {
 
 // 2. Create the Provider Component
 export function InvitationProvider({ children }) {
-  const [invitationData, setInvitationData] = useState(initialInvitationData);
+  // 👈 Swapped out useState for useLocalStorage
+  // This will save data automatically under the key "zewd_invitation_data"
+  const [invitationData, setInvitationData] = useLocalStorage(
+    "zewd_invitation_data",
+    initialInvitationData
+  );
 
   // Helper function to update individual fields dynamically
   const updateField = (fieldName, value) => {
@@ -49,6 +55,7 @@ export function InvitationProvider({ children }) {
 export function useInvitation() {
   const context = useContext(InvitationContext);
   if (!context) {
+    
     throw new Error("useInvitation must be used within an InvitationProvider");
   }
   return context;
