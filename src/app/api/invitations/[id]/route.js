@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import { findOwnedInvitation } from "@/lib/invitationOwnership";
+import { buildInvitationSlug } from "@/lib/slug";
 import { handleApiError } from "@/lib/apiError";
 import Invitation from "@/models/Invitation";
+import Guest from "@/models/Guest";
 
 // GET /api/invitations/:id
 export async function GET(request, { params }) {
@@ -43,8 +45,28 @@ export async function PATCH(request, { params }) {
     }
 
     const updates = await request.json();
-    delete updates.slug; // slugs are immutable once shared
+    delete updates.slug; // clients never set the slug directly — see below
     delete updates.owner; // ownership can't be reassigned through this route
+
+    const nameChanged =
+      (typeof updates.brideName === "string" &&
+        updates.brideName !== owned.brideName) ||
+      (typeof updates.groomName === "string" &&
+        updates.groomName !== owned.groomName);
+
+    if (nameChanged) {
+      const hasGuests = await Guest.exists({ invitation: id });
+      if (!hasGuests) {
+        // No one has RSVP'd yet, so nothing depends on the current link —
+        // regenerate the slug to match the couple's updated names.
+        updates.slug = buildInvitationSlug(
+          updates.brideName ?? owned.brideName,
+          updates.groomName ?? owned.groomName,
+        );
+      }
+      // Once guests exist, keep the current slug so already-shared links
+      // don't silently break underneath someone who bookmarked it.
+    }
 
     const invitation = await Invitation.findByIdAndUpdate(
       id,

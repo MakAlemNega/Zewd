@@ -130,11 +130,19 @@ export function InvitationProvider({ children }) {
     pendingChangesRef.current = {};
     setIsSaving(true);
     try {
-      await fetch(`/api/invitations/${id}`, {
+      const res = await fetch(`/api/invitations/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(changes),
       });
+
+      // The server may regenerate the slug when the couple's names change
+      // (see the invitations/:id PATCH route) — pick that up so the share
+      // link shown in the UI stays in sync.
+      if (res.ok) {
+        const { invitation } = await res.json();
+        if (invitation?.slug) setSlug(invitation.slug);
+      }
     } catch (err) {
       console.error("Failed to save invitation", err);
     } finally {

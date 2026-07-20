@@ -3,8 +3,10 @@ import { dbConnect } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import { findOwnedInvitation } from "@/lib/invitationOwnership";
 import { handleApiError } from "@/lib/apiError";
+import { sendRsvpNotification } from "@/lib/email";
 import Guest from "@/models/Guest";
 import Invitation from "@/models/Invitation";
+import User from "@/models/User";
 
 // GET /api/guests?invitation=<invitationId> — list RSVPs for an invitation.
 // Only that invitation's owner can see who responded.
@@ -58,8 +60,8 @@ export async function POST(request) {
 
     await dbConnect();
 
-    const invitationExists = await Invitation.exists({ _id: body.invitation });
-    if (!invitationExists) {
+    const invitation = await Invitation.findById(body.invitation);
+    if (!invitation) {
       return NextResponse.json(
         { error: "Invitation not found" },
         { status: 404 },
@@ -67,6 +69,20 @@ export async function POST(request) {
     }
 
     const guest = await Guest.create(body);
+
+    if (invitation.owner) {
+      const host = await User.findById(invitation.owner);
+      if (host) {
+        await sendRsvpNotification({
+          hostEmail: host.email,
+          hostName: host.name,
+          guest,
+          invitation,
+          dashboardUrl: `${new URL(request.url).origin}/dashboard`,
+        });
+      }
+    }
+
     return NextResponse.json({ guest }, { status: 201 });
   } catch (err) {
     return handleApiError(err);
