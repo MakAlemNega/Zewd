@@ -1,19 +1,73 @@
 @import "tailwindcss";
 
+@theme {
+  /* Ink — the dominant surface. A warm near-black, not pure grayscale. */
+  --color-ink: oklch(19% 0.017 55);
+  --color-ink-soft: oklch(25% 0.02 55);
+  --color-ink-line: oklch(32% 0.02 55);
+
+  /* Ivory — reserved for the invitation "paper" itself, never the page shell. */
+  --color-ivory: oklch(97% 0.012 80);
+  --color-ivory-dim: oklch(93% 0.014 76);
+
+  /* Gold — the identity carrier. */
+  --color-gold: oklch(74% 0.12 78);
+  --color-gold-bright: oklch(82% 0.12 85);
+  --color-gold-deep: oklch(53% 0.1 66);
+
+  /* Clay — secondary warm dark, used sparingly for depth. */
+  --color-clay: oklch(32% 0.05 42);
+
+  --font-display: var(--font-bodoni), "Bodoni Moda", Georgia, serif;
+  --font-sans: var(--font-manrope), Manrope, system-ui, -apple-system,
+    sans-serif;
+}
+
 :root {
-  --background: #FAFAF9; /* Warm, premium ivory white */
-  --foreground: #1A1A1A; /* Crisp off-black for readability */
-  --brand-accent: #8B7355; /* Soft, elegant Ethiopian Gold / Bronze */
+  --background: var(--color-ink);
+  --foreground: oklch(95% 0.01 80);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   overflow-x: hidden;
 }
 
-/* Smooth transitions for template variations */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
 .transition-all-custom {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }

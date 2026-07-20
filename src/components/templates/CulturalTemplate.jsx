@@ -1,6 +1,14 @@
 "use client";
 
 import React from "react";
+import { Divider } from "./Ornament";
+
+const tiletBandStyle = {
+  backgroundImage:
+    "linear-gradient(135deg, var(--color-gold) 25%, transparent 25%), linear-gradient(225deg, var(--color-gold) 25%, transparent 25%), linear-gradient(45deg, var(--color-gold) 25%, transparent 25%), linear-gradient(315deg, var(--color-gold) 25%, transparent 25%)",
+  backgroundPosition: "10px 0, 10px 0, 0 0, 0 0",
+  backgroundSize: "20px 10px",
+};
 
 export default function CulturalTemplate({ data }) {
   const formatDate = (dateString) => {
@@ -14,80 +22,67 @@ export default function CulturalTemplate({ data }) {
   };
 
   return (
-    <div className="w-full h-full bg-[#FAF6F0] text-stone-900 p-5 sm:p-7 flex flex-col justify-between relative overflow-hidden select-none">
-      {/* Top Graphic Tilet Ornament Banner Mockup */}
-      <div className="w-full h-3 flex items-center justify-between opacity-80 select-none">
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="w-full h-full border-t border-b border-amber-600 bg-amber-700/10 flex items-center justify-center text-[6px] text-amber-700 font-serif"
-          >
-            ❖
-          </div>
-        ))}
-      </div>
+    <div className="relative flex h-full w-full select-none flex-col overflow-hidden bg-ivory text-stone-900">
+      {/* Top tilet ornament band */}
+      <div className="h-2.5 w-full opacity-90" style={tiletBandStyle} />
 
-      <div className="border border-amber-600/20 rounded-sm h-full w-full my-3 p-3 flex flex-col justify-between text-center bg-white/40 backdrop-blur-xs">
-        {/* Family Honorifics Banner */}
-        <div className="space-y-0.5 my-1">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-700">
+      <div className="relative flex flex-1 flex-col justify-between p-5 text-center sm:p-7">
+        {/* Radial gold glow behind monogram area */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/10 blur-2xl" />
+
+        {/* Family Honorifics */}
+        <div className="relative z-10 space-y-1">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-600">
             {data.brideParents || "የሙሽሪት ቤተሰቦች"}
           </p>
-          <p className="text-[9px] text-amber-700 font-serif italic">እና</p>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-700">
+          <p className="font-display text-[11px] italic text-gold-deep">
+            እና
+          </p>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-600">
             {data.groomParents || "የሙሽራው ቤተሰቦች"}
           </p>
-          <div className="text-[10px] text-amber-800 font-serif max-w-[220px] mx-auto leading-relaxed pt-2">
+          <p className="mx-auto max-w-55 pt-2 text-[10px] leading-relaxed text-stone-500">
             የልጆቻቸውን የቅዱስ ጋብቻ በዓል ለማክበር በደስታና በክብር የእርሶን መገኘት ይፈልጋሉ።
-          </div>
+          </p>
         </div>
 
-        {/* Central Monogram Frame */}
-        <div className="my-2 py-2 border-y border-stone-200/60 relative">
-          <div className="absolute left-1/2 -top-2 -translate-x-1/2 bg-[#FAF6F0] px-3 text-xs text-amber-700">
+        {/* Central Monogram */}
+        <div className="relative z-10 my-2 border-y border-gold-deep/20 py-3">
+          <div className="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-ivory px-3 text-[11px] tracking-widest text-gold-deep">
             ዘውድ
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl font-semibold tracking-wide text-amber-950">
+          <h2 className="font-display text-2xl font-medium tracking-wide text-stone-900 sm:text-3xl">
             {data.brideName}{" "}
-            <span className="text-amber-600 font-normal">&</span>{" "}
+            <span className="font-normal italic text-gold-deep">&</span>{" "}
             {data.groomName}
           </h2>
         </div>
 
-        {/* Logistics Detail Box */}
-        <div className="bg-amber-50/50 rounded-sm p-3 border border-amber-600/10 space-y-1.5 text-stone-800 my-1">
-          <p className="font-serif text-xs font-bold tracking-wider text-stone-900">
+        {/* Logistics Detail */}
+        <div className="relative z-10 my-1 space-y-1.5 rounded-sm border border-gold-deep/15 bg-gold/5 p-3.5 text-stone-800">
+          <p className="text-xs font-bold tracking-wider text-stone-900">
             {formatDate(data.weddingDate)}
           </p>
-          <p className="text-[10px] tracking-widest text-stone-500 uppercase font-medium">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-stone-500">
             ከሰዓት {data.weddingTime || "6:00 ሰዓት"} ጀምሮ
           </p>
-          <div className="h-[0.5px] w-12 bg-amber-600/20 mx-auto my-1"></div>
-          <p className="font-serif text-sm text-amber-900 font-medium tracking-wide">
+          <Divider className="mx-auto w-12 text-gold-deep" />
+          <p className="font-display text-sm font-medium tracking-wide text-gold-deep">
             {data.venueName}
           </p>
-          <p className="text-[10px] text-stone-500 font-sans max-w-[200px] mx-auto leading-tight">
+          <p className="mx-auto max-w-50 text-[10px] leading-tight text-stone-500">
             {data.venueAddress}
           </p>
         </div>
 
-        {/* Custom Text/Verse */}
-        <p className="text-[10px] text-stone-500 italic max-w-[240px] mx-auto leading-normal px-2">
-          "{data.personalMessage}"
+        {/* Custom Verse */}
+        <p className="relative z-10 mx-auto max-w-60 px-2 text-[10px] italic leading-normal text-stone-500">
+          &ldquo;{data.personalMessage}&rdquo;
         </p>
       </div>
 
-      {/* Bottom Graphic Tilet Ornament Banner Mockup */}
-      <div className="w-full h-3 flex items-center justify-between opacity-80 select-none">
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="w-full h-full border-t border-b border-amber-600 bg-amber-700/10 flex items-center justify-center text-[6px] text-amber-700 font-serif"
-          >
-            ❖
-          </div>
-        ))}
-      </div>
+      {/* Bottom tilet ornament band */}
+      <div className="h-2.5 w-full opacity-90" style={tiletBandStyle} />
     </div>
   );
 }

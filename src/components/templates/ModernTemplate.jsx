@@ -6,67 +6,72 @@ export default function ModernTemplate({ data }) {
   const formatDate = (dateString) => {
     if (!dateString) return "00.00.00";
     const date = new Date(dateString);
-    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+    return `${String(date.getDate()).padStart(2, "0")}.${String(
+      date.getMonth() + 1,
+    ).padStart(2, "0")}.${date.getFullYear()}`;
   };
 
   return (
-    <div className="w-full h-full bg-[#1A1A1A] text-white p-6 sm:p-8 flex flex-col justify-between text-left relative select-none">
-      {/* Structural Minimalist Frame Grid */}
-      <div className="absolute top-4 left-4 right-4 bottom-4 border border-stone-800 pointer-events-none" />
+    <div className="relative flex h-full w-full select-none flex-col justify-between bg-ink p-6 text-left text-ivory sm:p-8">
+      {/* Structural frame with corner ticks */}
+      <div className="pointer-events-none absolute inset-4 border border-ink-line" />
+      <div className="pointer-events-none absolute left-4 top-4 h-2 w-2 border-l border-t border-gold" />
+      <div className="pointer-events-none absolute right-4 top-4 h-2 w-2 border-r border-t border-gold" />
+      <div className="pointer-events-none absolute bottom-4 left-4 h-2 w-2 border-b border-l border-gold" />
+      <div className="pointer-events-none absolute bottom-4 right-4 h-2 w-2 border-b border-r border-gold" />
 
       {/* Top Banner Tag */}
-      <div className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium">
-        // CELEBRATION
+      <div className="z-10 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.25em] text-ivory/45">
+        <span className="h-1 w-1 rounded-full bg-gold" />
+        Celebration
       </div>
 
       {/* Main Couple Names */}
-      <div className="my-auto space-y-2 z-10">
-        <h1 className="text-4xl sm:text-5xl font-light tracking-tight text-white capitalize">
-          {data.brideName || "BRIDE"}
+      <div className="z-10 my-auto space-y-1">
+        <h1 className="font-display text-4xl font-normal capitalize italic tracking-tight text-ivory sm:text-5xl">
+          {data.brideName || "Bride"}
         </h1>
-        <div className="text-xl font-serif italic text-stone-500 pl-1 select-none">
-          &
-        </div>
-        <h1 className="text-4xl sm:text-5xl font-light tracking-tight text-white capitalize">
-          {data.groomName || "GROOM"}
+        <div className="pl-1 text-lg font-light text-gold/70">&</div>
+        <h1 className="font-display text-4xl font-normal capitalize italic tracking-tight text-ivory sm:text-5xl">
+          {data.groomName || "Groom"}
         </h1>
       </div>
 
       {/* Logistics Stack */}
-      <div className="space-y-4 border-t border-stone-800 pt-6 z-10">
-        <div className="flex justify-between items-baseline">
-          <span className="text-xs uppercase tracking-widest text-stone-400 font-medium">
+      <div className="z-10 space-y-3.5 border-t border-ink-line pt-5">
+        <div className="flex items-baseline justify-between">
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ivory/45">
             Date
           </span>
-          <span className="text-lg font-mono tracking-wider font-semibold text-white">
+          <span className="text-lg font-semibold tracking-wider text-gold tabular-nums">
             {formatDate(data.weddingDate)}
           </span>
         </div>
 
-        <div className="flex justify-between items-baseline">
-          <span className="text-xs uppercase tracking-widest text-stone-400 font-medium">
+        <div className="flex items-baseline justify-between">
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ivory/45">
             Time
           </span>
-          <span className="text-sm font-light text-stone-200">
+          <span className="text-sm font-light text-ivory/85">
             {data.weddingTime || "12:00 PM"}
           </span>
         </div>
 
         <div className="space-y-1">
-          <div className="text-xs uppercase tracking-widest text-stone-400 font-medium mb-1">
+          <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.2em] text-ivory/45">
             Location
           </div>
-          <p className="text-sm font-medium text-white tracking-wide">
+          <p className="text-sm font-medium tracking-wide text-ivory">
             {data.venueName || "The Venue Hall"}
           </p>
-          <p className="text-xs text-stone-400 font-light leading-relaxed">
+          <p className="text-xs font-light leading-relaxed text-ivory/55">
             {data.venueAddress || "Address details, Addis Ababa"}
           </p>
         </div>
       </div>
 
       {/* Short Personal Note Footnote */}
-      <p className="text-[10px] text-stone-500 font-light leading-relaxed mt-4 max-w-[280px]">
+      <p className="z-10 mt-4 max-w-70 text-[10px] font-light leading-relaxed text-ivory/45">
         {data.personalMessage || "Join our celebration."}
       </p>
     </div>
