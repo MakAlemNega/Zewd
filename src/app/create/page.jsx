@@ -3,16 +3,36 @@
 import React from "react";
 import { useInvitation } from "@/context/InvitationContext";
 import InvitationForm from "@/components/invitation/InvitationForm";
+import ShareLinkBar from "@/components/invitation/ShareLinkBar";
 import { TEMPLATE_REGISTRY } from "@/components/templates/templates"; // 👈 Import Registry map
 
 export default function CreateInvitationPage() {
-  const { invitationData } = useInvitation();
+  const { invitationData, status } = useInvitation();
 
   // Find the selected template component config dynamically, fallback to classic-ivory if none matched
   const SelectedTemplateConfig =
     TEMPLATE_REGISTRY[invitationData.templateId] ||
     TEMPLATE_REGISTRY["classic-ivory"];
   const ActiveTemplateComponent = SelectedTemplateConfig.component;
+
+  if (status === "error") {
+    return (
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-ink-soft px-6 text-center">
+        <p className="text-sm text-ivory/60">
+          We couldn&apos;t reach the server to load your invitation. Check
+          your connection and refresh the page.
+        </p>
+      </div>
+    );
+  }
+
+  if (status === "loading") {
+    return (
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-ink-soft">
+        <p className="text-sm text-ivory/50">Loading your invitation…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-ink-soft">
@@ -28,6 +48,7 @@ export default function CreateInvitationPage() {
               instantly.
             </p>
 
+            <ShareLinkBar />
             <InvitationForm />
           </div>
         </div>
