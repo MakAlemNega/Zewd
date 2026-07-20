@@ -58,6 +58,8 @@ export function InvitationProvider({ children }) {
 
     async function bootstrap() {
       try {
+        // 1. Fast path: this browser already remembers which draft it's
+        // editing.
         if (invitationId) {
           const res = await fetch(`/api/invitations/${invitationId}`);
           if (res.ok) {
@@ -69,10 +71,29 @@ export function InvitationProvider({ children }) {
             }
             return;
           }
-          // Stored id no longer exists (e.g. deleted) — fall through and
-          // start a fresh draft below.
+          // Stored id no longer belongs to this account (deleted, or a
+          // different user's browser) — fall through below.
         }
 
+        // 2. No local pointer — check whether this account already owns an
+        // invitation (e.g. logging in from a new device) before creating
+        // another one.
+        const listRes = await fetch("/api/invitations");
+        if (listRes.ok) {
+          const { invitations } = await listRes.json();
+          if (invitations.length > 0) {
+            const invitation = invitations[0];
+            if (!cancelled) {
+              setInvitationId(invitation._id);
+              setInvitationData(invitation);
+              setSlug(invitation.slug);
+              setStatus("ready");
+            }
+            return;
+          }
+        }
+
+        // 3. First time ever for this account — start a fresh draft.
         const res = await fetch("/api/invitations", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

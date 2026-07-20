@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
+import { getCurrentUser } from "@/lib/auth";
+import { findOwnedInvitation } from "@/lib/invitationOwnership";
 import { handleApiError } from "@/lib/apiError";
 import Invitation from "@/models/Invitation";
 
@@ -7,9 +9,10 @@ import Invitation from "@/models/Invitation";
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    await dbConnect();
+    const user = await getCurrentUser();
 
-    const invitation = await Invitation.findById(id);
+    await dbConnect();
+    const invitation = await findOwnedInvitation(user, id);
     if (!invitation) {
       return NextResponse.json(
         { error: "Invitation not found" },
@@ -28,22 +31,26 @@ export async function GET(request, { params }) {
 export async function PATCH(request, { params }) {
   try {
     const { id } = await params;
-    const updates = await request.json();
-    delete updates.slug; // slugs are immutable once shared
+    const user = await getCurrentUser();
 
     await dbConnect();
-    const invitation = await Invitation.findByIdAndUpdate(
-      id,
-      { $set: updates },
-      { returnDocument: "after", runValidators: true },
-    );
-
-    if (!invitation) {
+    const owned = await findOwnedInvitation(user, id);
+    if (!owned) {
       return NextResponse.json(
         { error: "Invitation not found" },
         { status: 404 },
       );
     }
+
+    const updates = await request.json();
+    delete updates.slug; // slugs are immutable once shared
+    delete updates.owner; // ownership can't be reassigned through this route
+
+    const invitation = await Invitation.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      { returnDocument: "after", runValidators: true },
+    );
 
     return NextResponse.json({ invitation });
   } catch (err) {
@@ -55,16 +62,18 @@ export async function PATCH(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
-    await dbConnect();
+    const user = await getCurrentUser();
 
-    const invitation = await Invitation.findByIdAndDelete(id);
-    if (!invitation) {
+    await dbConnect();
+    const owned = await findOwnedInvitation(user, id);
+    if (!owned) {
       return NextResponse.json(
         { error: "Invitation not found" },
         { status: 404 },
       );
     }
 
+    await Invitation.findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch (err) {
     return handleApiError(err);
