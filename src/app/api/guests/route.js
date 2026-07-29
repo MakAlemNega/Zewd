@@ -3,6 +3,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import { findOwnedInvitation } from "@/lib/invitationOwnership";
 import { handleApiError } from "@/lib/apiError";
+import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 import { sendRsvpNotification } from "@/lib/email";
 import Guest from "@/models/Guest";
 import Invitation from "@/models/Invitation";
@@ -49,6 +50,15 @@ export async function GET(request) {
 // body: { invitation, name, phone?, attending, guestCount?, message? }
 export async function POST(request) {
   try {
+    // Generous enough for a family submitting a few RSVPs from one network,
+    // tight enough to blunt a scripted flood against a single invitation.
+    const { allowed, retryAfterMs } = rateLimit(request, {
+      key: "guests:create",
+      limit: 20,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!allowed) return rateLimitResponse(retryAfterMs);
+
     const body = await request.json();
 
     if (!body.invitation || !body.name) {

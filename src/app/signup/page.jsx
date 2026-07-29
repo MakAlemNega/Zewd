@@ -98,6 +98,18 @@ export default function SignupPage() {
           >
             {submitting ? "Creating account…" : "Sign up"}
           </button>
+
+          <p className="text-center text-[11px] leading-relaxed text-ivory/35">
+            By signing up, you agree to our{" "}
+            <Link href="/terms" className="text-ivory/50 hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="text-ivory/50 hover:underline">
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </form>
 
         <p className="mt-6 text-center text-sm text-ivory/50">

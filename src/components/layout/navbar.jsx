@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
-import LogoutButton from "./LogoutButton";
+import AdminMenu from "./AdminMenu";
 
 const Navbar = async () => {
   const user = await getCurrentUser();
@@ -25,34 +25,12 @@ const Navbar = async () => {
           <Link href="/#how" className="transition-colors hover:text-ivory">
             How it works
           </Link>
-          {user && (
-            <Link
-              href="/dashboard"
-              className="transition-colors hover:text-ivory"
-            >
-              Dashboard
-            </Link>
-          )}
-        </div>
-
-        <div className="flex items-center gap-4">
-          {user ? (
-            <LogoutButton />
-          ) : (
-            <Link
-              href="/login"
-              className="hidden text-sm text-ivory/70 transition-colors hover:text-ivory sm:inline"
-            >
-              Log in
-            </Link>
-          )}
-          <Link
-            href={user ? "/create" : "/signup"}
-            className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink transition-all hover:bg-gold-bright hover:shadow-[0_0_0_4px_oklch(0.74_0.12_78/0.15)]"
-          >
-            {user ? "Create Invitation" : "Get Started"}
+          <Link href="/contact" className="transition-colors hover:text-ivory">
+            Contact
           </Link>
         </div>
+
+        <AdminMenu loggedIn={!!user} userName={user?.name} />
       </nav>
     </header>
   );

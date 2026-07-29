@@ -8,10 +8,20 @@ import {
   SESSION_MAX_AGE_SECONDS,
 } from "@/lib/session";
 import { handleApiError } from "@/lib/apiError";
+import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 // POST /api/auth/login
 export async function POST(request) {
   try {
+    // Slows down credential-stuffing/brute-force attempts against a single
+    // account without locking out a legitimate user retyping a password.
+    const { allowed, retryAfterMs } = rateLimit(request, {
+      key: "auth:login",
+      limit: 10,
+      windowMs: 15 * 60 * 1000,
+    });
+    if (!allowed) return rateLimitResponse(retryAfterMs);
+
     const { email, password } = await request.json();
 
     if (!email || !password) {

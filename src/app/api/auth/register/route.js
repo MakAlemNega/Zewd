@@ -7,10 +7,18 @@ import {
   SESSION_MAX_AGE_SECONDS,
 } from "@/lib/session";
 import { handleApiError } from "@/lib/apiError";
+import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 // POST /api/auth/register — create an account and start a session
 export async function POST(request) {
   try {
+    const { allowed, retryAfterMs } = rateLimit(request, {
+      key: "auth:register",
+      limit: 5,
+      windowMs: 15 * 60 * 1000,
+    });
+    if (!allowed) return rateLimitResponse(retryAfterMs);
+
     const { name, email, password } = await request.json();
 
     if (!name || !email || !password) {

@@ -7,8 +7,8 @@ export const TEMPLATE_IDS = ["classic-ivory", "modern-minimal", "cultural-gold"]
 
 const InvitationSchema = new Schema(
   {
-    // Optional until real authentication exists; lets invitations be created
-    // anonymously today and attributed to an account later.
+    // Always set from the session on creation (see api/invitations POST) —
+    // nullable only so records from before real accounts existed still load.
     owner: { type: Schema.Types.ObjectId, ref: "User", default: null },
 
     slug: {
@@ -17,27 +17,38 @@ const InvitationSchema = new Schema(
       unique: true,
       trim: true,
       lowercase: true,
+      maxlength: 200,
     },
 
-    brideName: { type: String, required: true, trim: true },
-    groomName: { type: String, required: true, trim: true },
-    brideParents: { type: String, trim: true, default: "" },
-    groomParents: { type: String, trim: true, default: "" },
+    brideName: { type: String, required: true, trim: true, maxlength: 100 },
+    groomName: { type: String, required: true, trim: true, maxlength: 100 },
+    brideParents: { type: String, trim: true, default: "", maxlength: 200 },
+    groomParents: { type: String, trim: true, default: "", maxlength: 200 },
 
     weddingDate: { type: Date },
-    weddingTime: { type: String, trim: true, default: "" },
+    weddingTime: { type: String, trim: true, default: "", maxlength: 50 },
 
-    venueName: { type: String, trim: true, default: "" },
-    venueAddress: { type: String, trim: true, default: "" },
+    venueName: { type: String, trim: true, default: "", maxlength: 150 },
+    venueAddress: { type: String, trim: true, default: "", maxlength: 300 },
 
-    personalMessage: { type: String, trim: true, default: "" },
+    personalMessage: {
+      type: String,
+      trim: true,
+      default: "",
+      maxlength: 1000,
+    },
 
     templateId: {
       type: String,
       enum: TEMPLATE_IDS,
       default: "classic-ivory",
     },
-    colorTheme: { type: String, trim: true, default: "gold-default" },
+    colorTheme: {
+      type: String,
+      trim: true,
+      default: "gold-default",
+      maxlength: 50,
+    },
   },
   { timestamps: true },
 );
