@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
-// Account access lives behind a single low-key "Admin" affordance rather
-// than a prominent nav CTA — only the couple managing an invitation ever
-// needs it; every other visitor (guests, browsers) never should.
+// Signed-out visitors get two plain, always-visible buttons (Log in / Get
+// Started) — no menu to open. Once signed in, account actions (Dashboard,
+// Edit invitation, Log out) collapse behind a single "Admin" dropdown,
+// since only the couple managing an invitation ever needs those.
 export default function AdminMenu({ loggedIn, userName }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
@@ -27,6 +28,25 @@ export default function AdminMenu({ loggedIn, userName }) {
     window.location.assign("/");
   };
 
+  if (!loggedIn) {
+    return (
+      <div className="flex items-center gap-3">
+        <Link
+          href="/login"
+          className="text-sm font-medium text-ivory/70 transition-colors hover:text-ivory"
+        >
+          Log in
+        </Link>
+        <Link
+          href="/signup"
+          className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink transition-all hover:bg-gold-bright hover:shadow-[0_0_0_4px_oklch(0.74_0.12_78/0.15)]"
+        >
+          Get Started
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div ref={menuRef} className="relative">
       <button
@@ -42,58 +62,37 @@ export default function AdminMenu({ loggedIn, userName }) {
             clipRule="evenodd"
           />
         </svg>
-        {loggedIn ? "Admin" : "Get Started"}
+        Admin
       </button>
 
       {open && (
         <div className="absolute right-0 mt-2 w-52 overflow-hidden rounded-md border border-ink-line bg-ink-soft py-1.5 shadow-xl">
-          {loggedIn ? (
-            <>
-              {userName && (
-                <p className="truncate border-b border-ink-line px-4 py-2 text-xs text-ivory/40">
-                  Signed in as {userName}
-                </p>
-              )}
-              <Link
-                href="/dashboard"
-                onClick={() => setOpen(false)}
-                className="block px-4 py-2 text-sm text-ivory/80 transition-colors hover:bg-ink hover:text-ivory"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/create"
-                onClick={() => setOpen(false)}
-                className="block px-4 py-2 text-sm text-ivory/80 transition-colors hover:bg-ink hover:text-ivory"
-              >
-                Edit invitation
-              </Link>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="block w-full px-4 py-2 text-left text-sm text-ivory/60 transition-colors hover:bg-ink hover:text-ivory"
-              >
-                Log out
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                className="block px-4 py-2 text-sm text-ivory/80 transition-colors hover:bg-ink hover:text-ivory"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/signup"
-                onClick={() => setOpen(false)}
-                className="block px-4 py-2 text-sm text-ivory/80 transition-colors hover:bg-ink hover:text-ivory"
-              >
-                Sign up
-              </Link>
-            </>
+          {userName && (
+            <p className="truncate border-b border-ink-line px-4 py-2 text-xs text-ivory/40">
+              Signed in as {userName}
+            </p>
           )}
+          <Link
+            href="/dashboard"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2 text-sm text-ivory/80 transition-colors hover:bg-ink hover:text-ivory"
+          >
+            Dashboard
+          </Link>
+          <Link
+            href="/create"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2 text-sm text-ivory/80 transition-colors hover:bg-ink hover:text-ivory"
+          >
+            Edit invitation
+          </Link>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="block w-full px-4 py-2 text-left text-sm text-ivory/60 transition-colors hover:bg-ink hover:text-ivory"
+          >
+            Log out
+          </button>
         </div>
       )}
     </div>

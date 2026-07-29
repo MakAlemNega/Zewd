@@ -53,6 +53,30 @@ const InvitationSchema = new Schema(
       default: "gold-default",
       maxlength: 50,
     },
+
+    // "template" renders one of TEMPLATE_IDS via templateId (above).
+    // "custom" renders customLayout instead, via CustomCardRenderer —
+    // built with the drag-and-drop editor at /create.
+    designMode: {
+      type: String,
+      enum: ["template", "custom"],
+      default: "template",
+    },
+
+    // Freeform shape by design (a from-scratch canvas layout doesn't map to
+    // a fixed set of fields the way the built-in templates do):
+    //   { background: { type: "color"|"image", value: string },
+    //     elements: [{ id, type: "text"|"image", x, y, width, zIndex, ...
+    //                  (text: text, fontFamily, fontSize, color, fontWeight,
+    //                   italic, align) | (image: src) }] }
+    // Validated at the API layer (see api/invitations/[id]/route.js), not
+    // here — Mongoose can't usefully validate a shape this open-ended.
+    customLayout: { type: Schema.Types.Mixed, default: null },
+
+    // Guests see a "not published yet" placeholder until this is true,
+    // *unless* they're the invitation's own owner (see /i/[slug]/page.jsx) —
+    // so a host can always preview their real card before going live.
+    published: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

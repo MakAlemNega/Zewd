@@ -29,7 +29,7 @@ export default function SignupPage() {
         return;
       }
 
-      window.location.assign("/create");
+      window.location.assign("/dashboard");
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");

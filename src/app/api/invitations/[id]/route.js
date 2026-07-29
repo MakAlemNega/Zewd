@@ -3,6 +3,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import { findOwnedInvitation } from "@/lib/invitationOwnership";
 import { buildInvitationSlug } from "@/lib/slug";
+import { sanitizeCustomLayout } from "@/lib/customLayout";
 import { handleApiError } from "@/lib/apiError";
 import Invitation from "@/models/Invitation";
 import Guest from "@/models/Guest";
@@ -37,6 +38,10 @@ async function applyInvitationUpdate(user, id, rawUpdates) {
   const updates = { ...rawUpdates };
   delete updates.slug; // clients never set the slug directly — see below
   delete updates.owner; // ownership can't be reassigned through this route
+
+  if ("customLayout" in updates) {
+    updates.customLayout = sanitizeCustomLayout(updates.customLayout);
+  }
 
   const nameChanged =
     (typeof updates.brideName === "string" &&

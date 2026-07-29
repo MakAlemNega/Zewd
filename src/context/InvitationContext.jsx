@@ -166,6 +166,14 @@ export function InvitationProvider({ children }) {
     [flushSave],
   );
 
+  // For components that persist their own field directly (e.g. CanvasEditor,
+  // which saves customLayout itself since it needs finer control over
+  // debouncing/beacon-flush timing) — updates local state only, without
+  // scheduling a redundant save of its own.
+  const syncField = useCallback((fieldName, value) => {
+    setInvitationData((prev) => ({ ...prev, [fieldName]: value }));
+  }, []);
+
   // Reset the current draft back to defaults (same record, same share link)
   const resetForm = useCallback(() => {
     setInvitationData(initialInvitationData);
@@ -226,6 +234,7 @@ export function InvitationProvider({ children }) {
       value={{
         invitationData,
         updateField,
+        syncField,
         resetForm,
         invitationId,
         slug,
