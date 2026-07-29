@@ -28,6 +28,43 @@ export async function GET(request, { params }) {
   }
 }
 
+// Shared by PATCH and the sendBeacon-only POST below — returns the updated
+// invitation, or null if it doesn't exist / isn't owned by `user`.
+async function applyInvitationUpdate(user, id, rawUpdates) {
+  const owned = await findOwnedInvitation(user, id);
+  if (!owned) return null;
+
+  const updates = { ...rawUpdates };
+  delete updates.slug; // clients never set the slug directly — see below
+  delete updates.owner; // ownership can't be reassigned through this route
+
+  const nameChanged =
+    (typeof updates.brideName === "string" &&
+      updates.brideName !== owned.brideName) ||
+    (typeof updates.groomName === "string" &&
+      updates.groomName !== owned.groomName);
+
+  if (nameChanged) {
+    const hasGuests = await Guest.exists({ invitation: id });
+    if (!hasGuests) {
+      // No one has RSVP'd yet, so nothing depends on the current link —
+      // regenerate the slug to match the couple's updated names.
+      updates.slug = buildInvitationSlug(
+        updates.brideName ?? owned.brideName,
+        updates.groomName ?? owned.groomName,
+      );
+    }
+    // Once guests exist, keep the current slug so already-shared links
+    // don't silently break underneath someone who bookmarked it.
+  }
+
+  return Invitation.findByIdAndUpdate(
+    id,
+    { $set: updates },
+    { returnDocument: "after", runValidators: true },
+  );
+}
+
 // PATCH /api/invitations/:id — update any invitation field (e.g. from the
 // live /create form)
 export async function PATCH(request, { params }) {
@@ -36,43 +73,40 @@ export async function PATCH(request, { params }) {
     const user = await getCurrentUser();
 
     await dbConnect();
-    const owned = await findOwnedInvitation(user, id);
-    if (!owned) {
+    const updates = await request.json();
+    const invitation = await applyInvitationUpdate(user, id, updates);
+
+    if (!invitation) {
       return NextResponse.json(
         { error: "Invitation not found" },
         { status: 404 },
       );
     }
 
+    return NextResponse.json({ invitation });
+  } catch (err) {
+    return handleApiError(err);
+  }
+}
+
+// POST /api/invitations/:id — functionally identical to PATCH. Exists only
+// because navigator.sendBeacon (used to flush last-second edits when a tab
+// is closing) can only send POST requests.
+export async function POST(request, { params }) {
+  try {
+    const { id } = await params;
+    const user = await getCurrentUser();
+
+    await dbConnect();
     const updates = await request.json();
-    delete updates.slug; // clients never set the slug directly — see below
-    delete updates.owner; // ownership can't be reassigned through this route
+    const invitation = await applyInvitationUpdate(user, id, updates);
 
-    const nameChanged =
-      (typeof updates.brideName === "string" &&
-        updates.brideName !== owned.brideName) ||
-      (typeof updates.groomName === "string" &&
-        updates.groomName !== owned.groomName);
-
-    if (nameChanged) {
-      const hasGuests = await Guest.exists({ invitation: id });
-      if (!hasGuests) {
-        // No one has RSVP'd yet, so nothing depends on the current link —
-        // regenerate the slug to match the couple's updated names.
-        updates.slug = buildInvitationSlug(
-          updates.brideName ?? owned.brideName,
-          updates.groomName ?? owned.groomName,
-        );
-      }
-      // Once guests exist, keep the current slug so already-shared links
-      // don't silently break underneath someone who bookmarked it.
+    if (!invitation) {
+      return NextResponse.json(
+        { error: "Invitation not found" },
+        { status: 404 },
+      );
     }
-
-    const invitation = await Invitation.findByIdAndUpdate(
-      id,
-      { $set: updates },
-      { returnDocument: "after", runValidators: true },
-    );
 
     return NextResponse.json({ invitation });
   } catch (err) {

@@ -30,6 +30,18 @@ export default function CulturalTemplate({ data }) {
         {/* Radial gold glow behind monogram area */}
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/10 blur-2xl" />
 
+        {/* Optional couple photo */}
+        {data.coverImageUrl && (
+          <div className="relative z-10 mx-auto -mb-1 h-16 w-16 overflow-hidden rounded-full border-2 border-gold shadow-sm">
+            {/* eslint-disable-next-line @next/next/no-img-element -- user-uploaded, unknown intrinsic size */}
+            <img
+              src={data.coverImageUrl}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+
         {/* Family Honorifics */}
         <div className="relative z-10 space-y-1">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-600">

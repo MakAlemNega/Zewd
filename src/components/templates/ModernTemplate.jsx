@@ -21,9 +21,21 @@ export default function ModernTemplate({ data }) {
       <div className="pointer-events-none absolute bottom-4 right-4 h-2 w-2 border-b border-r border-gold" />
 
       {/* Top Banner Tag */}
-      <div className="z-10 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.25em] text-ivory/45">
-        <span className="h-1 w-1 rounded-full bg-gold" />
-        Celebration
+      <div className="z-10 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.25em] text-ivory/45">
+          <span className="h-1 w-1 rounded-full bg-gold" />
+          Celebration
+        </div>
+        {data.coverImageUrl && (
+          <div className="h-10 w-10 overflow-hidden rounded-sm border border-gold/30">
+            {/* eslint-disable-next-line @next/next/no-img-element -- user-uploaded, unknown intrinsic size */}
+            <img
+              src={data.coverImageUrl}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
       </div>
 
       {/* Main Couple Names */}

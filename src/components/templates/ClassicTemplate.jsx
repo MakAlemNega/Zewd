@@ -27,6 +27,18 @@ export default function ClassicTemplate({ data }) {
       <CornerFlourish className="absolute bottom-3 right-3 h-8 w-8 -scale-x-100 -scale-y-100 text-gold-deep/50 sm:bottom-4 sm:right-4" />
 
       <div className="relative z-10 flex h-full flex-col justify-between py-4 text-center">
+        {/* Optional couple photo */}
+        {data.coverImageUrl && (
+          <div className="mx-auto -mt-1 mb-1 h-16 w-16 overflow-hidden rounded-full border-2 border-gold-deep/30 shadow-sm">
+            {/* eslint-disable-next-line @next/next/no-img-element -- user-uploaded, unknown intrinsic size */}
+            <img
+              src={data.coverImageUrl}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+
         {/* 1. Host Announcement (Parents) */}
         <div className="space-y-1.5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-stone-500">

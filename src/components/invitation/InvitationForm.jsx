@@ -3,6 +3,7 @@
 import React from "react";
 import { useInvitation } from "@/context/InvitationContext";
 import { TEMPLATE_LIST } from "../templates/templates"; // Import template definitions
+import CoverImageUploader from "./CoverImageUploader";
 
 export default function InvitationForm() {
   const { invitationData, updateField } = useInvitation();
@@ -40,6 +41,8 @@ export default function InvitationForm() {
           ))}
         </div>
       </div>
+
+      <CoverImageUploader />
 
       {/* ... KEEP ALL PRE-EXISTING SECTIONS BELOW (THE COUPLE, PARENTS, DATE & TIME, ETC.) ... */}
       {/* SECTION 1: THE COUPLE */}

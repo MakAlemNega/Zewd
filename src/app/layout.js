@@ -1,5 +1,6 @@
 import "./globals.css";
 import Link from "next/link";
+import Image from "next/image";
 import { Bodoni_Moda, Manrope } from "next/font/google";
 import Navbar from "@/components/layout/navbar";
 
@@ -40,7 +41,14 @@ export default function RootLayout({ children }) {
               Terms of Service
             </Link>
           </div>
-          <p className="mt-4">
+          <p className="mt-4 flex items-center justify-center gap-2">
+            <Image
+              src="/zewd-crown-mark.png"
+              alt=""
+              width={540}
+              height={355}
+              className="h-3.5 w-auto opacity-60"
+            />
             © {new Date().getFullYear()} Zewd. Made with care, for every
             Habesha love story.
           </p>

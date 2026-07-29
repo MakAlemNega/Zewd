@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getCurrentUser } from "@/lib/auth";
 import AdminMenu from "./AdminMenu";
 
@@ -10,8 +11,16 @@ const Navbar = async () => {
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10">
         <Link
           href="/"
-          className="font-display text-xl tracking-wide text-ivory transition-colors hover:text-gold-bright"
+          className="flex items-center gap-2 font-display text-xl tracking-wide text-ivory transition-colors hover:text-gold-bright"
         >
+          <Image
+            src="/zewd-crown-mark.png"
+            alt=""
+            width={540}
+            height={355}
+            className="h-6 w-auto"
+            priority
+          />
           Zewd
         </Link>
 

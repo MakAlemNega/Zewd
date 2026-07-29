@@ -42,7 +42,7 @@ export default function AdminMenu({ loggedIn, userName }) {
             clipRule="evenodd"
           />
         </svg>
-        Admin
+        {loggedIn ? "Admin" : "Get Started"}
       </button>
 
       {open && (

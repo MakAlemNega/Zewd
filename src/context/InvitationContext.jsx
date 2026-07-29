@@ -186,6 +186,41 @@ export function InvitationProvider({ children }) {
     };
   }, [flushSave]);
 
+  // A regular fetch() started here can be aborted mid-flight when the page
+  // actually closes, so a tab closed within the 700ms debounce window used
+  // to lose that last edit. sendBeacon is designed to survive exactly that —
+  // it's fire-and-forget and the browser guarantees delivery even as the
+  // page unloads. "pagehide" covers the tab closing/navigating away entirely;
+  // "visibilitychange" also covers switching tabs or backgrounding on
+  // mobile, which is often the last event a page ever sees there.
+  useEffect(() => {
+    function flushBeacon() {
+      const id = invitationIdRef.current;
+      const changes = pendingChangesRef.current;
+      if (!id || Object.keys(changes).length === 0) return;
+      if (typeof navigator === "undefined" || !navigator.sendBeacon) return;
+
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+      pendingChangesRef.current = {};
+
+      const blob = new Blob([JSON.stringify(changes)], {
+        type: "application/json",
+      });
+      navigator.sendBeacon(`/api/invitations/${id}`, blob);
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "hidden") flushBeacon();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", flushBeacon);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", flushBeacon);
+    };
+  }, []);
+
   return (
     <InvitationContext.Provider
       value={{

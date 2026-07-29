@@ -38,6 +38,10 @@ const InvitationSchema = new Schema(
       maxlength: 1000,
     },
 
+    // A Vercel Blob URL (see api/uploads) — empty until the couple uploads
+    // a photo. Every template treats this as fully optional.
+    coverImageUrl: { type: String, trim: true, default: "", maxlength: 500 },
+
     templateId: {
       type: String,
       enum: TEMPLATE_IDS,

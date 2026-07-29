@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -38,9 +39,28 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-ink px-6 py-16">
-      <div className="w-full max-w-sm">
-        <h1 className="text-center font-display text-3xl italic text-ivory">
+    <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-ink px-6 py-16">
+      {/* Ambient glow behind the glass card — glassmorphism needs color
+          underneath it to actually read as glass. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-32 left-[-10%] h-96 w-96 rounded-full bg-gold/20 blur-[110px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-[-15%] right-[-10%] h-80 w-80 rounded-full bg-clay/40 blur-[100px]"
+      />
+
+      <div className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.06] p-8 shadow-2xl shadow-black/40 backdrop-blur-2xl">
+        <Image
+          src="/zewd-logo-full.png"
+          alt="Zewd"
+          width={618}
+          height={566}
+          className="mx-auto h-16 w-auto"
+          priority
+        />
+        <h1 className="mt-5 text-center font-display text-3xl italic text-ivory">
           Create your account
         </h1>
         <p className="mt-2 text-center text-sm text-ivory/50">
@@ -57,7 +77,7 @@ export default function SignupPage() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border border-ink-line bg-ink-soft px-3 py-2 text-sm text-ivory outline-none transition-colors focus:border-gold"
+              className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-ivory outline-none transition-colors focus:border-gold"
             />
           </div>
           <div>
@@ -69,7 +89,7 @@ export default function SignupPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-ink-line bg-ink-soft px-3 py-2 text-sm text-ivory outline-none transition-colors focus:border-gold"
+              className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-ivory outline-none transition-colors focus:border-gold"
             />
           </div>
           <div>
@@ -82,7 +102,7 @@ export default function SignupPage() {
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md border border-ink-line bg-ink-soft px-3 py-2 text-sm text-ivory outline-none transition-colors focus:border-gold"
+              className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-ivory outline-none transition-colors focus:border-gold"
             />
             <p className="mt-1 text-[11px] text-ivory/35">
               At least 8 characters.
